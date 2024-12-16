@@ -1,0 +1,36 @@
+services:
+  backend1:
+    build:
+      context: ./app/backend
+      dockerfile: Dockerfile
+    container_name: backend1
+    networks:
+      app_net:
+        ipv4_address: 172.31.0.2
+
+  backend2:
+    build:
+      context: ./app/backend
+      dockerfile: Dockerfile
+    container_name: backend2
+    networks:
+      app_net:
+        ipv4_address: 172.31.0.3
+
+  nginx:
+    build: ./app/nginx
+    ports:
+      - "443:443"
+    depends_on:
+      - backend1
+      - backend2
+    networks:
+      app_net:
+        ipv4_address: 172.31.0.4
+
+networks:
+  app_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.31.0.0/16
